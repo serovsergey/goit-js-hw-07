@@ -22,12 +22,11 @@ const createGalleryMarkup = () => {
     galleryRef.insertAdjacentHTML('beforeend', galleryMarkup);
 }
 
-let onModalKeyDown;
-
 const onImageClick = (evt) => {
     if (!evt.target.classList.contains('gallery__image')) return;
     evt.preventDefault();
     const originalUrl = evt.target.dataset.source;
+    let onModalKeyDown;
     basicLightbox.create(`
 		<div style="position:relative">
         <button style="position: absolute; top: -16px; right: -16px; border-radius: 50%;">X</button>
@@ -40,7 +39,6 @@ const onImageClick = (evt) => {
         onShow: (instance) => {
             instance.element().querySelector('button').addEventListener('click', () => instance.close());
             document.body.style.overflow = 'hidden';
-            console.log(document.body.style.overflow);
             window.addEventListener('keydown', onModalKeyDown = function (evt) {
                 if (evt.code === 'Escape')
                     instance.close();
