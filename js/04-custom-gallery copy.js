@@ -3,11 +3,11 @@ import { galleryItems } from './gallery-items.js';
 
 let currentImage;
 
-const createGalleryItem = ({ preview, original, description }, id) => {
+const createGalleryItem = ({ preview, original, description }) => {
     return `
     <li class="gallery__item"">
         <a class="gallery__link" href="${original}">
-            <img class="gallery__image" src="${preview}" alt="${description}" data-id="${id}"/>
+            <img class="gallery__image" src="${preview}" alt="${description}"/>
         </a>
     </li>`;
 }
@@ -37,41 +37,30 @@ const updateModalContent = (img) => {
 }
 
 const gotoNext = () => {
-    const curId = Number(currentImage.dataset.id);
-    let nextImg = galleryRef.querySelector(`img[data-id="${galleryItems.length - 1 === curId ? 0 : curId + 1}"]`);
+    const curItem = currentImage.closest('.gallery__item');
+    let nextSibling = curItem.nextSibling;
+    while (nextSibling && nextSibling.nodeType !== 1) {
+        nextSibling = nextSibling.nextSibling
+    }
+    if (!nextSibling)
+        nextSibling = curItem.parentNode.firstElementChild;
+    const nextImg = nextSibling.querySelector('.gallery__image');
     updateModalContent(nextImg);
 }
 
 const gotoPrev = () => {
-    const curId = Number(currentImage.dataset.id);
-    let prevImg = galleryRef.querySelector(`img[data-id="${curId === 0 ? galleryItems.length - 1 : curId - 1}"]`);
+    const curItem = currentImage.closest('.gallery__item');
+    let prevSibling = curItem.previousSibling;
+    while (prevSibling && prevSibling.nodeType !== 1) {
+        prevSibling = prevSibling.previousSibling
+    }
+    if (!prevSibling)
+        prevSibling = curItem.parentNode.lastElementChild;
+    console.log(prevSibling)
+    const prevImg = prevSibling.querySelector('.gallery__image');
     updateModalContent(prevImg);
 }
 
-// const gotoNext = () => {
-//     const curItem = currentImage.closest('.gallery__item');
-//     let nextSibling = curItem.nextSibling;
-//     while (nextSibling && nextSibling.nodeType !== 1) {
-//         nextSibling = nextSibling.nextSibling
-//     }
-//     if (!nextSibling)
-//         nextSibling = curItem.parentNode.firstElementChild;
-//     const nextImg = nextSibling.querySelector('.gallery__image');
-//     updateModalContent(nextImg);
-// }
-
-// const gotoPrev = () => {
-//     const curItem = currentImage.closest('.gallery__item');
-//     let prevSibling = curItem.previousSibling;
-//     while (prevSibling && prevSibling.nodeType !== 1) {
-//         prevSibling = prevSibling.previousSibling
-//     }
-//     if (!prevSibling)
-//         prevSibling = curItem.parentNode.lastElementChild;
-//     console.log(prevSibling)
-//     const prevImg = prevSibling.querySelector('.gallery__image');
-//     updateModalContent(prevImg);
-// }
 const onKeyDown = (evt) => {
     switch (evt.code) {
         case 'Escape': closeModal();
