@@ -2,9 +2,9 @@ const buildImgItem = () => {
     const nativeLazyLoad = 'loading' in HTMLImageElement.prototype;
     return `
     <li class="item">
-        <img class="image lazyload"
+        <img class="image lazyload" width="320" height="240"
             ${nativeLazyLoad ? 'loading="lazy"' : ''}
-            ${nativeLazyLoad ? '' : 'data-'}src="https://picsum.photos/300/200?random=${Math.round(Math.random() * 100000)}"
+            ${nativeLazyLoad ? '' : 'data-'}src="https://picsum.photos/320/240?random=${Math.round(Math.random() * 100000)}"
             ${nativeLazyLoad ? '' : 'src="https://via.placeholder.com/300x200"'}
             alt="">
     </li>
