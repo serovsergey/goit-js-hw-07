@@ -105,7 +105,7 @@
 
 @keyframes slideFromRight {
   from {
-    transform: translate(50%, -50%);
+    transform: translate(50%, -50%) scale(1.5);
     opacity: 0;
   }
 
@@ -128,7 +128,7 @@
   }
 
   to {
-    transform: translate(-150%, -50%);
+    transform: translate(-150%, -50%) scale(0.5);
     opacity: 0;
   }
 }
@@ -141,7 +141,7 @@
 
 @keyframes slideFromLeft {
   from {
-    transform: translate(-150%, -50%);
+    transform: translate(-150%, -50%) scale(1.5);
     opacity: 0;
   }
 
@@ -164,7 +164,7 @@
   }
 
   to {
-    transform: translate(50%, -50%);
+    transform: translate(50%, -50%) scale(0.5);
     opacity: 0;
   }
 }
