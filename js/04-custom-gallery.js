@@ -36,32 +36,30 @@ const updateModalContent = (img) => {
     </h2>`;
 }
 
+const animate = (img, right) => {
+    const appear = right ? 'appearFromRight' : 'appearFromLeft';
+    const disappear = right ? 'disappearToLeft' : 'disappearToRight';
+    modalRef.classList.add(disappear);
+    modalRef.addEventListener('animationend', () => {
+        modalRef.classList.remove(disappear);
+        modalRef.classList.add(appear);
+        updateModalContent(img);
+        modalRef.addEventListener('animationend', () => {
+            modalRef.classList.remove(appear);
+        }, { once: true });
+    }, { once: true });
+}
+
 const gotoNext = () => {
     const curId = Number(currentImage.dataset.id);
     let nextImg = galleryRef.querySelector(`img[data-id="${galleryItems.length - 1 === curId ? 0 : curId + 1}"]`);
-    modalRef.classList.add('disappearToLeft');
-    modalRef.addEventListener('animationend', () => {
-        modalRef.classList.remove('disappearToLeft');
-        modalRef.classList.add('appearFromRight');
-        updateModalContent(nextImg);
-        modalRef.addEventListener('animationend', () => {
-            modalRef.classList.remove('appearFromRight');
-        }, { once: true });
-    }, { once: true });
+    animate(nextImg, true);
 }
 
 const gotoPrev = () => {
     const curId = Number(currentImage.dataset.id);
     let prevImg = galleryRef.querySelector(`img[data-id="${curId === 0 ? galleryItems.length - 1 : curId - 1}"]`);
-    modalRef.classList.add('disappearToRight');
-    modalRef.addEventListener('animationend', () => {
-        modalRef.classList.remove('disappearToRight');
-        modalRef.classList.add('appearFromLeft');
-        updateModalContent(prevImg);
-        modalRef.addEventListener('animationend', () => {
-            modalRef.classList.remove('appearFromLeft');
-        }, { once: true });
-    }, { once: true });
+    animate(prevImg, false);
 }
 
 // const gotoNext = () => {
