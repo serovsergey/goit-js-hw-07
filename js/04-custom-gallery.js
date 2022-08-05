@@ -39,13 +39,29 @@ const updateModalContent = (img) => {
 const gotoNext = () => {
     const curId = Number(currentImage.dataset.id);
     let nextImg = galleryRef.querySelector(`img[data-id="${galleryItems.length - 1 === curId ? 0 : curId + 1}"]`);
-    updateModalContent(nextImg);
+    modalRef.classList.add('disappearToLeft');
+    modalRef.addEventListener('animationend', () => {
+        modalRef.classList.remove('disappearToLeft');
+        modalRef.classList.add('appearFromRight');
+        updateModalContent(nextImg);
+        modalRef.addEventListener('animationend', () => {
+            modalRef.classList.remove('appearFromRight');
+        }, { once: true });
+    }, { once: true });
 }
 
 const gotoPrev = () => {
     const curId = Number(currentImage.dataset.id);
     let prevImg = galleryRef.querySelector(`img[data-id="${curId === 0 ? galleryItems.length - 1 : curId - 1}"]`);
-    updateModalContent(prevImg);
+    modalRef.classList.add('disappearToRight');
+    modalRef.addEventListener('animationend', () => {
+        modalRef.classList.remove('disappearToRight');
+        modalRef.classList.add('appearFromLeft');
+        updateModalContent(prevImg);
+        modalRef.addEventListener('animationend', () => {
+            modalRef.classList.remove('appearFromLeft');
+        }, { once: true });
+    }, { once: true });
 }
 
 // const gotoNext = () => {
