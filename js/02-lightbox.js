@@ -17,11 +17,5 @@ const createGalleryMarkup = () => {
     galleryRef.insertAdjacentHTML('beforeend', galleryMarkup);
 }
 
-const onImageClick = (evt) => {
-    if (!evt.target.classList.contains('gallery__image')) return;
-    evt.preventDefault();
-}
-
 createGalleryMarkup();
-galleryRef.addEventListener('click', onImageClick);
 const lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt', captionDelay: 250 });
