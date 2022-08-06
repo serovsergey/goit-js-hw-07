@@ -24,6 +24,9 @@ const closeModal = () => {
     document.body.style.overflow = 'visible';
     document.removeEventListener('keydown', onKeyDown);
 
+    btnNextRef.removeEventListener('click', gotoNext);
+    btnPrevRef.removeEventListener('click', gotoPrev);
+
     modalRef.removeEventListener('touchstart', handleTouchStart, false);
     modalRef.removeEventListener('touchmove', handleTouchMove, false);
     modalRef.removeEventListener('touchend', handleTouchEnd, false);
@@ -96,6 +99,9 @@ const onImageClick = (evt) => {
     document.body.style.overflow = 'hidden';
     updateModalContent(evt.target);
 
+    btnNextRef.addEventListener('click', gotoNext);
+    btnPrevRef.addEventListener('click', gotoPrev);
+
     modalRef.addEventListener('touchstart', handleTouchStart, false);
     modalRef.addEventListener('touchmove', handleTouchMove, false);
     modalRef.addEventListener('touchend', handleTouchEnd, false);
@@ -108,6 +114,9 @@ const onImageClick = (evt) => {
 const galleryRef = document.querySelector(".gallery");
 const backdropRef = document.querySelector(".backdrop");
 const modalRef = document.querySelector('.modal');
+const btnNextRef = modalRef.querySelector('.modal__next');
+const btnPrevRef = modalRef.querySelector('.modal__prev');
+
 modalRef.querySelector('.modal__btn-close').addEventListener('click', closeModal);
 const modalContentRef = modalRef.querySelector('.modal__content');
 createGalleryMarkup();

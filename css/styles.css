@@ -90,11 +90,44 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  background-color: #ffffffc0;
+}
+
+.modal__btn-close:hover,
+.modal__btn-close:focus {
+  background-color: #ffffff;
 }
 
 .modal__content {
   width: 100%;
   height: 100%;
+}
+
+.modal__next,
+.modal__prev {
+  position: absolute;
+  width: 32px;
+  height: 64px;
+  top: 50%;
+  padding: 0;
+  font-weight: 900;
+  background-color: #ffffffc0;
+  transform: translateY(-50%);
+}
+
+.modal__next:hover,
+.modal__next:focus,
+.modal__prev:hover,
+.modal__prev:focus {
+  background-color: #ffffff;
+}
+
+.modal__next {
+  right: -40px;
+}
+
+.modal__prev {
+  left: -40px;
 }
 
 .appearFromRight {
