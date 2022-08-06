@@ -89,6 +89,8 @@
   right: -16px;
   width: 44px;
   height: 44px;
+  font-weight: 900;
+  font-size: 1.1em;
   border-radius: 50%;
   background-color: #ffffffc0;
 }
@@ -111,7 +113,7 @@
   top: 50%;
   padding: 0;
   font-weight: 900;
-  font-size: 1.2em;
+  font-size: 1.1em;
   border: none;
   border-radius: 4px;
   color: #ffffff;
