@@ -23,6 +23,14 @@ const closeModal = () => {
     backdropRef.removeEventListener('click', backdropClick);
     document.body.style.overflow = 'visible';
     document.removeEventListener('keydown', onKeyDown);
+
+    modalRef.removeEventListener('touchstart', handleTouchStart, false);
+    modalRef.removeEventListener('touchmove', handleTouchMove, false);
+    modalRef.removeEventListener('touchend', handleTouchEnd, false);
+
+    backdropRef.removeEventListener('mousedown', onMouseDown, false);
+    backdropRef.removeEventListener('mousemove', throttledMouseMove, false);
+    backdropRef.removeEventListener('mouseup', onMouseUp, false);
 }
 
 const updateModalContent = (img) => {
@@ -62,30 +70,6 @@ const gotoPrev = () => {
     animate(prevImg, false);
 }
 
-// const gotoNext = () => {
-//     const curItem = currentImage.closest('.gallery__item');
-//     let nextSibling = curItem.nextSibling;
-//     while (nextSibling && nextSibling.nodeType !== 1) {
-//         nextSibling = nextSibling.nextSibling
-//     }
-//     if (!nextSibling)
-//         nextSibling = curItem.parentNode.firstElementChild;
-//     const nextImg = nextSibling.querySelector('.gallery__image');
-//     updateModalContent(nextImg);
-// }
-
-// const gotoPrev = () => {
-//     const curItem = currentImage.closest('.gallery__item');
-//     let prevSibling = curItem.previousSibling;
-//     while (prevSibling && prevSibling.nodeType !== 1) {
-//         prevSibling = prevSibling.previousSibling
-//     }
-//     if (!prevSibling)
-//         prevSibling = curItem.parentNode.lastElementChild;
-//     console.log(prevSibling)
-//     const prevImg = prevSibling.querySelector('.gallery__image');
-//     updateModalContent(prevImg);
-// }
 const onKeyDown = (evt) => {
     switch (evt.code) {
         case 'Escape': closeModal();
@@ -111,6 +95,14 @@ const onImageClick = (evt) => {
     document.addEventListener('keydown', onKeyDown);
     document.body.style.overflow = 'hidden';
     updateModalContent(evt.target);
+
+    modalRef.addEventListener('touchstart', handleTouchStart, false);
+    modalRef.addEventListener('touchmove', handleTouchMove, false);
+    modalRef.addEventListener('touchend', handleTouchEnd, false);
+
+    backdropRef.addEventListener('mousedown', onMouseDown, false);
+    backdropRef.addEventListener('mousemove', throttledMouseMove, false);
+    backdropRef.addEventListener('mouseup', onMouseUp, false);
 }
 
 const galleryRef = document.querySelector(".gallery");
@@ -120,3 +112,157 @@ modalRef.querySelector('.modal__btn-close').addEventListener('click', closeModal
 const modalContentRef = modalRef.querySelector('.modal__content');
 createGalleryMarkup();
 galleryRef.addEventListener('click', onImageClick);
+
+const Directions = Object.freeze({
+    Right: Symbol("direction_right"),
+    Left: Symbol("direction_left"),
+    Up: Symbol("direction_up"),
+    Down: Symbol("direction_down")
+})
+
+// Returns a function, that, when invoked, will only be triggered at most once
+// during a given window of time. Normally, the throttled function will run
+// as much as it can, without ever going more than once per `wait` duration;
+// but if you'd like to disable the execution on the leading edge, pass
+// `{leading: false}`. To disable execution on the trailing edge, ditto.
+function throttle(func, wait, options) {
+    let context, args, result;
+    let timeout = null;
+    let previous = 0;
+    if (!options) options = {};
+    const later = function () {
+        previous = options.leading === false ? 0 : Date.now();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+    };
+    return function () {
+        const now = Date.now();
+        if (!previous && options.leading === false) previous = now;
+        const remaining = wait - (now - previous);
+        context = this;
+        args = arguments;
+        if (remaining <= 0 || remaining > wait) {
+            if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
+            previous = now;
+            result = func.apply(context, args);
+            if (!timeout) context = args = null;
+        } else if (!timeout && options.trailing !== false) {
+            timeout = setTimeout(later, remaining);
+        }
+        return result;
+    };
+};
+
+let xDown = null;
+let yDown = null;
+let direction;
+
+function onMouseDown(evt) {
+    evt.preventDefault();
+    xDown = evt.clientX;
+    yDown = evt.clientY;
+}
+
+const throttledMouseMove = throttle(onMouseMove, 100);
+
+function onMouseMove(evt) {
+    if (!xDown || !yDown) {
+        return;
+    }
+    evt.preventDefault();
+    const xUp = evt.clientX;
+    const yUp = evt.clientY;
+
+    const xDiff = xDown - xUp;
+    const yDiff = yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+        if (xDiff > 0) { /* left swipe */
+            // gotoNext();
+            direction = Directions.Right;
+        } else { /* right swipe */
+            // gotoPrev();
+            direction = Directions.Left;
+        }
+    } else {
+        if (yDiff > 0) { /* up swipe */
+            // closeModal();
+            direction = Directions.Up;
+        } else { /* down swipe */
+
+        }
+    }
+}
+
+function onMouseUp(evt) {
+    evt.preventDefault();
+    switch (direction) {
+        case Directions.Right: gotoNext();
+            break;
+        case Directions.Left: gotoPrev();
+            break;
+        case Directions.Up: closeModal();
+            break;
+    }
+    xDown = null;
+    yDown = null;
+    direction = null;
+}
+
+function getTouches(evt) {
+    return evt.touches ||             // browser API
+        evt.originalEvent.touches; // jQuery
+}
+
+function handleTouchStart(evt) {
+    if (evt.touches.length === 1) {
+        const firstTouch = getTouches(evt)[0];
+        xDown = firstTouch.clientX;
+        yDown = firstTouch.clientY;
+    }
+};
+
+function handleTouchEnd(evt) {
+    // switch (direction) {
+    //     case Directions.Right: gotoNext();
+    //         break;
+    //     case Directions.Left: gotoPrev();
+    //         break;
+    //     case Directions.Up: closeModal();
+    //         break;
+    // }
+    xDown = null;
+    yDown = null;
+}
+
+function handleTouchMove(evt) {
+    if (!xDown || !yDown || evt.touches.length > 1) {
+        return;
+    }
+    const xUp = evt.touches[0].clientX;
+    const yUp = evt.touches[0].clientY;
+
+    const xDiff = xDown - xUp;
+    const yDiff = yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+        if (xDiff > 0) { /* left swipe */
+            gotoNext();
+            // direction = Directions.Right;
+        } else { /* right swipe */
+            gotoPrev();
+            // direction = Directions.Left;
+        }
+    } else {
+        if (yDiff > 0) { /* up swipe */
+            closeModal();
+            // direction = Directions.Up;
+        } else { /* down swipe */
+
+        }
+    }
+};
